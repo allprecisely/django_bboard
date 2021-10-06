@@ -17,7 +17,7 @@
     <div class="row">
         <ul class="col nav justify-content-end border">
             {% if not user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="#">Регистрация</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'main:register' %}">Регистрация</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'main:login' %}">Вход</a></li>
             {% else %}
             <li class="nav-item dropdown">

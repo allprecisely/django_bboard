@@ -103,6 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'main.AdvUser'
 
+EMAIL_PORT = 1025
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
