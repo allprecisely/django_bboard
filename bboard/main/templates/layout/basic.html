@@ -7,8 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
     {% bootstrap_css %}
-    <link rel="stylesheet" type="text/css"
-        href="{% static 'main/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'main/style.css' %}">
     {% bootstrap_javascript jquery='slim' %}
 </head>
 <body class="container-fluid">
@@ -46,6 +45,7 @@
             <span class="nav-link root font-weight-bold">Транспорт</span>
             <a class="nav-link" href="#">Легковой</a>
             <a class="nav-link" href="#">Грузовой</a>
+            <a class="nav-link root" href="{% url 'main:other' page='about' %}">О сайте</a>
         </nav>
         <section class="col border py-2">
             {% bootstrap_messages %}
