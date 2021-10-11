@@ -16,10 +16,7 @@ class ActualDebuggingServer(DebuggingServer):
 
 
 if __name__ == '__main__':
-    ActualDebuggingServer(
-        ('0.0.0.0', 1025),
-        ('0.0.0.0', 1025)
-    )
+    ActualDebuggingServer(('0.0.0.0', 1025), ('0.0.0.0', 1025))
     try:
         asyncore.loop()
     except KeyboardInterrupt:

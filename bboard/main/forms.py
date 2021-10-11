@@ -13,14 +13,10 @@ class AuthenticationCustomForm(auth_forms.AuthenticationForm):
         username = self.cleaned_data.get('username')
 
         if not (qs_user := AdvUser.objects.filter(username=username)):
-            raise ValidationError(_(
-                "A user with that username does not exist."
-        ))
+            raise ValidationError(_("A user with that username does not exist."))
 
         if not qs_user.first().is_active:
-            raise ValidationError(_(
-                "This account is inactive."
-            ))
+            raise ValidationError(_("This account is inactive."))
 
         return super().clean()
 
@@ -35,8 +31,16 @@ class ChangeUserInfoForm(forms.ModelForm):
 
 class RegisterUserForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
-    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput, help_text=password_validation.password_validators_help_text_html())
-    password2 = forms.CharField(label='Пароль (повторно)', widget=forms.PasswordInput, help_text='Введите тот же самый пароль еще раз для проверки')
+    password1 = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    password2 = forms.CharField(
+        label='Пароль (повторно)',
+        widget=forms.PasswordInput,
+        help_text='Введите тот же самый пароль еще раз для проверки',
+    )
 
     def clean_password1(self):
         if password1 := self.cleaned_data['password1']:
@@ -48,7 +52,11 @@ class RegisterUserForm(forms.ModelForm):
         password1 = self.cleaned_data['password1']
         password2 = self.cleaned_data['password2']
         if password1 and password2 and password1 != password2:
-            errors = {'password2': ValidationError('Введенные пароли не совпадают', code='password_mismatch')}
+            errors = {
+                'password2': ValidationError(
+                    'Введенные пароли не совпадают', code='password_mismatch'
+                )
+            }
             raise ValidationError(errors)
 
     def save(self, commit=True):

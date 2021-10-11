@@ -12,7 +12,9 @@ def send_activation_notifications(modeladmin, request, queryset):
     modeladmin.message_user(request, 'Письма с требованиями отправлены')
 
 
-send_activation_notifications.short_description = 'Отправка писем с требованиями активации'
+send_activation_notifications.short_description = (
+    'Отправка писем с требованиями активации'
+)
 
 
 class NonactivatedFilter(admin.SimpleListFilter):
@@ -32,10 +34,14 @@ class NonactivatedFilter(admin.SimpleListFilter):
             return queryset.filter(is_active=True, is_activated=True)
         elif val == 'threedays':
             d = datetime.date.today() - datetime.timedelta(days=3)
-            return queryset.filter(is_active=False, is_activated=False, data_joined__date__lt=d)
+            return queryset.filter(
+                is_active=False, is_activated=False, data_joined__date__lt=d
+            )
         elif val == 'week':
             d = datetime.date.today() - datetime.timedelta(days=7)
-            return queryset.filter(is_active=False, is_activated=False, data_joined__date__lt=d)
+            return queryset.filter(
+                is_active=False, is_activated=False, data_joined__date__lt=d
+            )
 
 
 class AdvUserAdmin(admin.ModelAdmin):
