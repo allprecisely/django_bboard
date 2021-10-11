@@ -12,6 +12,26 @@ urlpatterns = [
         views.BBPasswordChangeView.as_view(),
         name='password_change',
     ),
+    path(
+        'accounts/password/reset/complete/',
+        views.BBPasswordResetCompleteView.as_view(),
+        name='password_reset_complete',
+    ),
+    path(
+        'accounts/password/reset/confirm/<uidb64>/<token>/',
+        views.BBPasswordResetConfirmView.as_view(),
+        name='password_reset_confirm',
+    ),
+    path(
+        'accounts/password/reset/done/',
+        views.BBPasswordResetDoneView.as_view(),
+        name='password_reset_done',
+    ),
+    path(
+        'accounts/password/reset/',
+        views.BBPasswordResetView.as_view(),
+        name='password_reset',
+    ),
     path('accounts/profile/', views.profile, name='profile'),
     path(
         'accounts/profile/change/',
