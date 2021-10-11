@@ -1,9 +1,28 @@
 from django import forms
+from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 from .apps import user_register
 from .models import AdvUser
+
+
+class AuthenticationCustomForm(auth_forms.AuthenticationForm):
+    def clean(self):
+        username = self.cleaned_data.get('username')
+
+        if not (qs_user := AdvUser.objects.filter(username=username)):
+            raise ValidationError(_(
+                "A user with that username does not exist."
+        ))
+
+        if not qs_user.first().is_active:
+            raise ValidationError(_(
+                "This account is inactive."
+            ))
+
+        return super().clean()
 
 
 class ChangeUserInfoForm(forms.ModelForm):
