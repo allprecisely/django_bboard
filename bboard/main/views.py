@@ -65,6 +65,10 @@ class BBPasswordResetView(PasswordResetView):
     email_template_name = 'email/reset_email.txt'
 
 
+def by_rubric(request, pk):
+    pass
+
+
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AdvUser
     template_name = 'main/change_user_info.html'

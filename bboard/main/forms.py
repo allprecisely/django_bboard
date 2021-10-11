@@ -5,14 +5,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 from .apps import user_register
-from .models import AdvUser
+from main import models
 
 
 class AuthenticationCustomForm(auth_forms.AuthenticationForm):
     def clean(self):
         username = self.cleaned_data.get('username')
 
-        if not (qs_user := AdvUser.objects.filter(username=username)):
+        if not (qs_user := models.AdvUser.objects.filter(username=username)):
             raise ValidationError(_("A user with that username does not exist."))
 
         if not qs_user.first().is_active:
@@ -25,7 +25,7 @@ class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
 
     class Meta:
-        model = AdvUser
+        model = models.AdvUser
         fields = ('username', 'email', 'first_name', 'last_name', 'send_messages')
 
 
@@ -70,7 +70,7 @@ class RegisterUserForm(forms.ModelForm):
         return user
 
     class Meta:
-        model = AdvUser
+        model = models.AdvUser
         fields = (
             'username',
             'email',
@@ -80,3 +80,16 @@ class RegisterUserForm(forms.ModelForm):
             'last_name',
             'send_messages',
         )
+
+
+class SubRubricForm(forms.ModelForm):
+    super_rubric = forms.ModelChoiceField(
+        queryset=models.SuperRubric.objects.all(),
+        empty_label=None,
+        label='Надрубрика',
+        required=True,
+    )
+
+    class Meta:
+        model = models.SubRubric
+        fields = '__all__'
