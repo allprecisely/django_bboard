@@ -11,8 +11,9 @@
 {% if user.first_name and user.last_name %}
 <p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
 {% else %}
-<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
+<p>Здравствуйте!</p>
 {% endif %}
+<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
 {% if bbs %}
 <div class="container-fluid mb-2">
     <div class="row">
