@@ -12,9 +12,14 @@
 <form method="post">
     {% csrf_token %}
     {% bootstrap_form form layout='horizontal' %}
-    <input type="hidden" name="next" value="{{ next }}">
-    {% buttons submit='Войти' %}{% endbuttons %}
+<!--    <input type="hidden" name="next" value="{{ next }}">-->
+    <div class="container-fluid mb-2">
+        <div class="row">
+            {% buttons submit='Войти' %}{% endbuttons %}
+            <div class="col">&nbsp;</div>
+            <a href="{% url 'main:password_reset' %}">Забыли пароль?</a>
+        </div>
+    </div>
 </form>
-<a href="{% url 'main:password_reset' %}">Забыли пароль?</a>
 {% endif %}
 {% endblock %}

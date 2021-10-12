@@ -75,5 +75,24 @@ class SuperRubricAdmin(admin.ModelAdmin):
     inlines = (SubRubricInline,)
 
 
+class AdditionalImageInline(admin.TabularInline):
+    model = models.AdditionalImage
+
+
+class BbAdmin(admin.ModelAdmin):
+    list_display = ('rubric', 'title', 'content', 'author', 'created_at')
+    fields = (
+        ('rubric', 'author'),
+        'title',
+        'content',
+        'price',
+        'contacts',
+        'image',
+        'is_active',
+    )
+    inlines = (AdditionalImageInline,)
+
+
 admin.site.register(models.AdvUser, AdvUserAdmin)
 admin.site.register(models.SuperRubric, SuperRubricAdmin)
+admin.site.register(models.Bb, BbAdmin)

@@ -93,3 +93,7 @@ class SubRubricForm(forms.ModelForm):
     class Meta:
         model = models.SubRubric
         fields = '__all__'
+
+
+class SearchForm(forms.Form):
+    keyword = forms.CharField(required=False, max_length=20, label='')

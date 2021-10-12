@@ -1,9 +1,16 @@
+import datetime
+import os
+
 from django.template.loader import render_to_string
 from django.core.signing import Signer
 
 from bboard.settings import ALLOWED_HOSTS
 
 signer = Signer()
+
+
+def get_timestamp_path(instance, filename):
+    return f'{datetime.datetime.now().timestamp()}{os.path.splitext(filename)[1]}'
 
 
 def send_activation_notification(user):

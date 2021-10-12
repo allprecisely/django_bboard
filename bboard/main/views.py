@@ -10,7 +10,9 @@ from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.views import PasswordResetDoneView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator
 from django.core.signing import BadSignature
+from django.db.models import Q
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -23,15 +25,13 @@ from django.views.generic.edit import CreateView
 from django.views.generic.edit import DeleteView
 from django.views.generic.edit import UpdateView
 
-from .forms import AuthenticationCustomForm
-from .forms import ChangeUserInfoForm
-from .forms import RegisterUserForm
-from .models import AdvUser
+from main import forms
+from main import models
 from .utilities import signer
 
 
 class BBLoginView(LoginView):
-    form_class = AuthenticationCustomForm
+    form_class = forms.AuthenticationCustomForm
     template_name = 'main/login.html'
 
 
@@ -66,13 +66,37 @@ class BBPasswordResetView(PasswordResetView):
 
 
 def by_rubric(request, pk):
-    pass
+    rubric = get_object_or_404(models.SubRubric, pk=pk)
+    bbs = models.Bb.objects.filter(is_active=True, rubric=pk)
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+        bbs = bbs.filter(q)
+    else:
+        keyword = ''
+
+    form = forms.SearchForm(initial={'keyword': keyword})
+    paginator = Paginator(bbs, 2)
+    if 'page' in request.GET:
+        page_num = request.GET['page']
+    else:
+        page_num = 1
+    page = paginator.get_page(page_num)
+    context = {'rubric': rubric, 'page': page, 'bbs': page.object_list, 'form': form}
+    return render(request, 'main/by_rubric.html', context)
+
+
+def detail(request, rubric_pk, pk):
+    bb = get_object_or_404(models.Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    context = {'bb': bb, 'ais': ais}
+    return render(request, 'main/detail.html', context)
 
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = AdvUser
+    model = models.AdvUser
     template_name = 'main/change_user_info.html'
-    form_class = ChangeUserInfoForm
+    form_class = forms.ChangeUserInfoForm
     success_url = reverse_lazy('main:profile')
     success_message = 'Данные пользователя изменены'
 
@@ -87,7 +111,7 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
 
 class DeleteUserView(LoginRequiredMixin, DeleteView):
-    model = AdvUser
+    model = models.AdvUser
     template_name = 'main/delete_user.html'
     success_url = reverse_lazy('main:index')
 
@@ -107,7 +131,8 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    bbs = models.Bb.objects.filter(is_active=True)[:10]
+    return render(request, 'main/index.html', {'bbs': bbs})
 
 
 def other_page(request, page):
@@ -128,9 +153,9 @@ class RegisterDoneView(TemplateView):
 
 
 class RegisterUserView(CreateView):
-    model = AdvUser
+    model = models.AdvUser
     template_name = 'main/register_user.html'
-    form_class = RegisterUserForm
+    form_class = forms.RegisterUserForm
     success_url = reverse_lazy('main:register_done')
 
 
@@ -139,7 +164,7 @@ def user_activate(request, sign):
         username = signer.unsign(sign)
     except BadSignature:
         return render(request, 'main/bad_signature.html')
-    user = get_object_or_404(AdvUser, username=username)
+    user = get_object_or_404(models.AdvUser, username=username)
     if user.is_activated:
         template = 'main/user_is_activated.html'
     else:
