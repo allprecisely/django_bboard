@@ -1,5 +1,9 @@
 {% extends "layout/basic.html" %}
 
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+
 {% block title %}Профиль пользователя{% endblock %}
 
 {% block content %}
@@ -7,7 +11,48 @@
 {% if user.first_name and user.last_name %}
 <p>Здравствуйте, {{ user.first_name }} {{ user.last_name }}!</p>
 {% else %}
-<p>Здравствуйте!</p>
+<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
 {% endif %}
-<h3>Ваши объявления</h3>
+{% if bbs %}
+<div class="container-fluid mb-2">
+    <div class="row">
+        <h2>Ваши объявления</h2>
+        <div class="col">&nbsp;</div>
+        <form class="col-md-auto form-inline">
+            {% bootstrap_form form show_label=False %}
+            {% bootstrap_button content='Искать' button_type='submit' %}
+        </form>
+    </div>
+</div>
+<ul class="list-unstyled">
+    {% for bb in bbs %}
+    <li class="media my-5 p-3 border">
+        {% url 'main:profile_bb_detail' pk=bb.pk as url %}
+        <a href="{{ url }}{{ all }}">
+            {% if bb.image %}
+            <img class="mr-3" src="{% thumbnail bb.image 'default' %}">
+            {% else %}
+            <img class="mr-3" src="{% static 'main/empty.jpg' %}">
+            {% endif %}
+        </a>
+        <div class="media-body">
+            <h3><a href="{{ url }}{{ all }}">{{ bb.title }}</a></h3>
+            <div>{{ bb.content }}</div>
+            <p class="text-right font-weight-bold">{{ bb.price }} руб.</p>
+            <div class="container-fluid mb-2">
+                <div class="row">
+                    <div class="col">&nbsp;</div>
+                    <a href="{% url 'main:profile_bb_change' pk=bb.pk %}">Изменить</a>
+                    <a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
+                    <p class="text-right font-italic">{{ bb.created_at }}</p>
+                </div>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% bootstrap_pagination page url=keyword %}
+{% else %}
+<h2>Объявлений пока нет. <a href="{% url 'main:profile_bb_add' %}">Создайте первое :)</a></h2>
+{% endif %}
 {% endblock %}

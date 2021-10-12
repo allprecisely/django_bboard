@@ -16,6 +16,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
@@ -145,7 +146,77 @@ def other_page(request, page):
 
 @login_required
 def profile(request):
-    return render(request, 'main/profile.html')
+    bbs = models.Bb.objects.filter(author=request.user.pk)
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+        bbs = bbs.filter(q)
+    else:
+        keyword = ''
+
+    form = forms.SearchForm(initial={'keyword': keyword})
+    page = Paginator(bbs, 2).get_page(request.GET.get('page', 1))
+    context = {'page': page, 'bbs': page.object_list, 'form': form}
+    return render(request, 'main/profile.html', context)
+
+
+@login_required
+def profile_bb_add(request):
+    if request.method == 'POST':
+        form = forms.BbForm(request.POST, request.FILES)
+        if form.is_valid():
+            bb = form.save()
+            formset = forms.AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                return redirect('main:profile')
+    else:
+        form = forms.BbForm(initial={'author': request.user.pk})
+        formset = forms.AIFormSet()
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_bb_add.html', context)
+
+
+@login_required
+def profile_bb_detail(request, pk):
+    bb = get_object_or_404(models.Bb, pk=pk)
+    ais = bb.additionalimage_set.all()
+    context = {'bb': bb, 'ais': ais}
+    return render(request, 'main/profile_bb_detail.html', context)
+
+
+@login_required
+def profile_bb_change(request, pk):
+    bb = get_object_or_404(models.Bb, pk=pk)
+    if request.method == 'POST':
+        form = forms.BbForm(request.POST, request.FILES, instance=bb)
+        if form.is_valid():
+            bb = form.save()
+            formset = forms.AIFormSet(request.POST, request.FILES, instance=bb)
+            print(123)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление исправлено')
+                print(213)
+                return redirect('main:profile')
+    else:
+        form = forms.BbForm(instance=bb)
+        formset = forms.AIFormSet(instance=bb)
+    context = {'form': form, 'formset': formset}
+    return render(request, 'main/profile_bb_change.html', context)
+
+
+@login_required
+def profile_bb_delete(request, pk):
+    bb = get_object_or_404(models.Bb, pk=pk)
+    if request.method == 'POST':
+        bb.delete()
+        messages.add_message(request, messages.SUCCESS, 'Объявление удалено')
+        return redirect('main:profile')
+    else:
+        context = {'bb': bb}
+        return render(request, 'main/profile_bb_delete.html', context)
 
 
 class RegisterDoneView(TemplateView):

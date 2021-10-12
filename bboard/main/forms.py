@@ -21,6 +21,18 @@ class AuthenticationCustomForm(auth_forms.AuthenticationForm):
         return super().clean()
 
 
+class BbForm(forms.ModelForm):
+    class Meta:
+        model = models.Bb
+        fields = '__all__'
+        widgets = {'author': forms.HiddenInput}
+
+
+AIFormSet = forms.inlineformset_factory(
+    models.Bb, models.AdditionalImage, fields='__all__'
+)
+
+
 class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
 

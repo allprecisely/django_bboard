@@ -32,6 +32,20 @@ urlpatterns = [
         views.BBPasswordResetView.as_view(),
         name='password_reset',
     ),
+    path(
+        'accounts/profile/change/<int:pk>/',
+        views.profile_bb_change,
+        name='profile_bb_change',
+    ),
+    path(
+        'accounts/profile/delete/<int:pk>/',
+        views.profile_bb_delete,
+        name='profile_bb_delete',
+    ),
+    path('accounts/profile/add/', views.profile_bb_add, name='profile_bb_add'),
+    path(
+        'accounts/profile/<int:pk>/', views.profile_bb_detail, name='profile_bb_detail'
+    ),
     path('accounts/profile/', views.profile, name='profile'),
     path(
         'accounts/profile/change/',
