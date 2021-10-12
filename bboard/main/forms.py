@@ -1,3 +1,4 @@
+from captcha.fields import CaptchaField
 from django import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import password_validation
@@ -109,3 +110,22 @@ class SubRubricForm(forms.ModelForm):
 
 class SearchForm(forms.Form):
     keyword = forms.CharField(required=False, max_length=20, label='')
+
+
+class UserCommentForm(forms.ModelForm):
+    class Meta:
+        model = models.Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}
+
+
+class GuestCommentForm(forms.ModelForm):
+    captcha = CaptchaField(
+        label='Введите текст с картинки',
+        error_messages={'invalid': 'Неправильный ответ'},
+    )
+
+    class Meta:
+        model = models.Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}

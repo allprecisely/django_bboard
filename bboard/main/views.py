@@ -90,7 +90,26 @@ def by_rubric(request, pk):
 def detail(request, rubric_pk, pk):
     bb = get_object_or_404(models.Bb, pk=pk)
     ais = bb.additionalimage_set.all()
-    context = {'bb': bb, 'ais': ais}
+    comments = models.Comment.objects.filter(bb=pk, is_active=True)
+    initial = {'bb': bb.pk}
+    if request.user.is_authenticated:
+        initial['author'] = request.user.username
+        form_class = forms.UserCommentForm
+    else:
+        form_class = forms.GuestCommentForm
+
+    form = form_class(initial=initial)
+
+    if request.method == 'POST':
+        c_form = form_class(request.POST)
+        if c_form.is_valid():
+            c_form.save()
+            messages.add_message(request, messages.SUCCESS, 'Комментарий добавлен')
+        else:
+            form = c_form
+            messages.add_message(request, messages.WARNING, 'Комментарий не добавлен')
+
+    context = {'bb': bb, 'ais': ais, 'comments': comments, 'form': form}
     return render(request, 'main/detail.html', context)
 
 
@@ -182,7 +201,8 @@ def profile_bb_add(request):
 def profile_bb_detail(request, pk):
     bb = get_object_or_404(models.Bb, pk=pk)
     ais = bb.additionalimage_set.all()
-    context = {'bb': bb, 'ais': ais}
+    comments = models.Comment.objects.filter(bb=pk, is_active=True)
+    context = {'bb': bb, 'ais': ais, 'comments': comments}
     return render(request, 'main/profile_bb_detail.html', context)
 
 

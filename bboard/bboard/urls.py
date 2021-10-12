@@ -6,7 +6,11 @@ from django.urls import include
 from django.urls import path
 from django.views.decorators.cache import never_cache
 
-urlpatterns = [path('admin/', admin.site.urls), path('', include('main.urls'))]
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('captcha/', include('captcha.urls')),
+    path('', include('main.urls')),
+]
 
 if settings.DEBUG:
     urlpatterns.append(path('static/<path:path>', never_cache(serve)))

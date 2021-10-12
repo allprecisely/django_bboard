@@ -93,6 +93,13 @@ class BbAdmin(admin.ModelAdmin):
     inlines = (AdditionalImageInline,)
 
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'author', 'bb', 'content', 'created_at')
+    search_fields = ('author',)
+    readonly_fields = ('created_at',)
+
+
 admin.site.register(models.AdvUser, AdvUserAdmin)
 admin.site.register(models.SuperRubric, SuperRubricAdmin)
 admin.site.register(models.Bb, BbAdmin)
+admin.site.register(models.Comment, CommentAdmin)

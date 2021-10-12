@@ -1,0 +1,15 @@
+Привет, {{ author.username }}!
+
+На сайте "Доска объявлений" под вашим объявлением о {{ comment.bb.title }} появился новый комментарий:
+{% if comment.content|length > 20 %}
+{{ comment.content|slice:':20' }}...
+{% else %}
+{{ comment.content }}
+{% endif %}
+
+Зайдите скорее на страницу с объявлением, чтобы проверить обновления :)
+{{ host }}{% url 'main:detail' rubric_pk=comment.bb.rubric.pk pk=comment.bb.pk %}
+
+До свидания!
+
+С уважением, администрация сайта "Доска объявлений".
