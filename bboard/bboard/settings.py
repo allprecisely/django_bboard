@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.postgres',
     'django.contrib.staticfiles',
     'bootstrap4',
     'captcha',
@@ -87,10 +88,28 @@ WSGI_APPLICATION = 'bboard.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'bboard.data',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'bboard_db',
+        'USER': 'bboarduser',
+        'PASSWORD': 'devbboardpass',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
+
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://localhost:6379/0',
+#     },
+#     'session-storage': {
+#         'BACKEND': 'django_redis.cache.RedisCache',
+#         'LOCATION': 'redis://localhost:6379/2',
+#     },
+# }
+# SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+# SESSION_CACHE_ALIAS = 'session-storage'
+# DJANGO_REDIS_IGNORE_EXCEPTIONS = True
 
 
 # Password validation
