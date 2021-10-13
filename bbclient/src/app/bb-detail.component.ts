@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+
+import {BbService} from "./bb.service";
 
 @Component({
   selector: 'app-bb-detail',
@@ -6,10 +9,37 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./bb-detail.component.css']
 })
 export class BbDetailComponent implements OnInit {
+  bb: any;
+  comments: any;
+  author: String = '';
+  password: String = '';
+  content: String = '';
 
-  constructor() { }
+  constructor(private bbservice: BbService, private ar: ActivatedRoute) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    const pk = this.ar.snapshot.params.pk;
+    this.bbservice.getBb(pk).subscribe((bb: Object) => {
+      this.bb = bb;
+      this.getComments();
+    })
+  }
+
+  getComments() {
+    this.bbservice.getComments(this.bb.id).subscribe(
+      (comments: Object[]) => {this.comments = comments;}
+    );
+  }
+
+  submitComment() {
+    this.bbservice.addComment(this.bb.id, this.author, this.password, this.content).subscribe(
+      (comment: Object) => {
+        if (comment) {
+          this.content = '';
+          this.getComments();
+        }
+      }
+    )
   }
 
 }

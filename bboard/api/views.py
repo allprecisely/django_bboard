@@ -6,8 +6,6 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
-# from django.shortcuts import get_object_or_404
-
 from main import models
 from api import serializers
 
@@ -28,7 +26,6 @@ class BbDetailView(RetrieveAPIView):
 @permission_classes((IsAuthenticatedOrReadOnly,))
 def comments(request, pk):
     if request.method == 'POST':
-        print(request.data)
         serializer = serializers.CommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -39,10 +36,3 @@ def comments(request, pk):
         comments = models.Comment.objects.filter(is_active=True, bb=pk)
         serializer = serializers.CommentSerializer(comments, many=True)
         return Response(serializer.data)
-
-
-# @api_view(['GET'])
-# def detail(request, pk):
-#     bb = get_object_or_404(models.Bb, pk=pk)
-#     serializer = serializers.BbDetailSerializer(bb)
-#     return Response(serializer.data)
