@@ -5,14 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
+    <title>{% block title %}Главная{% endblock %} - Miles of Life</title>
     {% bootstrap_css %}
     <link rel="stylesheet" type="text/css" href="{% static 'main/style.css' %}">
     {% bootstrap_javascript jquery='slim' %}
 </head>
 <body class="container-fluid">
     <header class="mb-4">
-        <h1 class="display-1 text-center">0бъявления</h1>
+        <h1 class="display-1 text-center">Miles of Life</h1>
     </header>
     <div class="row">
         <ul class="col nav justify-content-end border">
@@ -25,7 +25,7 @@
                 href="#" role="button" aria-haspopup="true"
                 aria-expanded="false">Профиль</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'main:profile' %}">Мои объявления</a>
+                    <a class="dropdown-item" href="{% url 'main:profile' %}">Мои статьи</a>
                     <a class="dropdown-item" href="{% url 'main:profile_change' %}">Изменить личные данные</a>
                     <a class="dropdown-item" href="{% url 'main:password_change' %}">Изменить пароль</a>
                     <div class="dropdown-divider"></div>
@@ -40,11 +40,11 @@
     <div class="row">
         <nav class="col-md-auto nav flex-column border">
             <a class="nav-link root" href="{% url 'main:index' %}">Главная</a>
-            {% for rubric in rubrics %}
-            {% ifchanged rubric.super_rubric.pk %}
-            <span class="nav-link root font-weight-bold">{{ rubric.super_rubric.name }}</span>
+            {% for city in cities %}
+            {% ifchanged city.country.pk %}
+            <span class="nav-link root font-weight-bold">{{ city.country.name }}</span>
             {% endifchanged %}
-            <a class="nav-link" href="{% url 'main:by_rubric' pk=rubric.pk %}">{{ rubric.name }}</a>
+            <a class="nav-link" href="{% url 'main:by_city' pk=city.pk %}">{{ city.name }}</a>
             {% endfor %}
             <a class="nav-link root" href="{% url 'main:other' page='about' %}">О сайте</a>
         </nav>

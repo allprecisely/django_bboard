@@ -31,67 +31,67 @@ from main import models
 from .utilities import signer
 
 
-class BBLoginView(LoginView):
+class ArticleLoginView(LoginView):
     form_class = forms.AuthenticationCustomForm
     template_name = 'main/login.html'
 
 
-class BBLogoutView(LogoutView):
+class ArticleLogoutView(LogoutView):
     template_name = 'main/logout.html'
 
 
-class BBPasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
+class ArticlePasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
     template_name = 'main/password_change.html'
     success_url = reverse_lazy('main:profile')
     success_message = 'Пароль успешно изменен'
 
 
-class BBPasswordResetCompleteView(PasswordResetCompleteView):
+class ArticlePasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'main/password_reset_complete.html'
 
 
-class BBPasswordResetConfirmView(PasswordResetConfirmView):
+class ArticlePasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'main/password_reset_confirm.html'
     success_url = reverse_lazy('main:password_reset_complete')
 
 
-class BBPasswordResetDoneView(PasswordResetDoneView):
+class ArticlePasswordResetDoneView(PasswordResetDoneView):
     template_name = 'main/password_reset_done.html'
 
 
-class BBPasswordResetView(PasswordResetView):
+class ArticlePasswordResetView(PasswordResetView):
     template_name = 'main/password_reset.html'
     success_url = reverse_lazy('main:password_reset_done')
     subject_template_name = 'email/reset_subject.txt'
     email_template_name = 'email/reset_email.txt'
 
 
-def by_rubric(request, pk):
-    rubric = get_object_or_404(models.SubRubric, pk=pk)
-    bbs = models.Bb.objects.filter(is_active=True, rubric=pk)
+def by_city(request, pk):
+    city = get_object_or_404(models.City, pk=pk)
+    articles = models.Article.objects.filter(is_active=True, city=pk)
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
-        bbs = bbs.filter(q)
+        articles = articles.filter(q)
     else:
         keyword = ''
 
     form = forms.SearchForm(initial={'keyword': keyword})
-    paginator = Paginator(bbs, 2)
+    paginator = Paginator(articles, 2)
     if 'page' in request.GET:
         page_num = request.GET['page']
     else:
         page_num = 1
     page = paginator.get_page(page_num)
-    context = {'rubric': rubric, 'page': page, 'bbs': page.object_list, 'form': form}
-    return render(request, 'main/by_rubric.html', context)
+    context = {'city': city, 'page': page, 'articles': page.object_list, 'form': form}
+    return render(request, 'main/by_city.html', context)
 
 
-def detail(request, rubric_pk, pk):
-    bb = get_object_or_404(models.Bb, pk=pk)
-    ais = bb.additionalimage_set.all()
-    comments = models.Comment.objects.filter(bb=pk, is_active=True)
-    initial = {'bb': bb.pk}
+def detail(request, city_pk, pk):
+    article = get_object_or_404(models.Article, pk=pk)
+    ais = article.additionalimage_set.all()
+    comments = models.Comment.objects.filter(article=pk, is_active=True)
+    initial = {'article': article.pk}
     if request.user.is_authenticated:
         initial['author'] = request.user.username
         form_class = forms.UserCommentForm
@@ -109,12 +109,12 @@ def detail(request, rubric_pk, pk):
             form = c_form
             messages.add_message(request, messages.WARNING, 'Комментарий не добавлен')
 
-    context = {'bb': bb, 'ais': ais, 'comments': comments, 'form': form}
+    context = {'article': article, 'ais': ais, 'comments': comments, 'form': form}
     return render(request, 'main/detail.html', context)
 
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = models.AdvUser
+    model = models.TravelUser
     template_name = 'main/change_user_info.html'
     form_class = forms.ChangeUserInfoForm
     success_url = reverse_lazy('main:profile')
@@ -131,7 +131,7 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
 
 class DeleteUserView(LoginRequiredMixin, DeleteView):
-    model = models.AdvUser
+    model = models.TravelUser
     template_name = 'main/delete_user.html'
     success_url = reverse_lazy('main:index')
 
@@ -151,8 +151,8 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
 
 
 def index(request):
-    bbs = models.Bb.objects.filter(is_active=True)[:10]
-    return render(request, 'main/index.html', {'bbs': bbs})
+    articles = models.Article.objects.filter(is_active=True)[:10]
+    return render(request, 'main/index.html', {'articles': articles})
 
 
 def other_page(request, page):
@@ -165,78 +165,76 @@ def other_page(request, page):
 
 @login_required
 def profile(request):
-    bbs = models.Bb.objects.filter(author=request.user.pk)
+    articles = models.Article.objects.filter(author=request.user.pk)
     if 'keyword' in request.GET:
         keyword = request.GET['keyword']
         q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
-        bbs = bbs.filter(q)
+        articles = articles.filter(q)
     else:
         keyword = ''
 
     form = forms.SearchForm(initial={'keyword': keyword})
-    page = Paginator(bbs, 2).get_page(request.GET.get('page', 1))
-    context = {'page': page, 'bbs': page.object_list, 'form': form}
+    page = Paginator(articles, 2).get_page(request.GET.get('page', 1))
+    context = {'page': page, 'articles': page.object_list, 'form': form}
     return render(request, 'main/profile.html', context)
 
 
 @login_required
-def profile_bb_add(request):
+def profile_article_add(request):
     if request.method == 'POST':
-        form = forms.BbForm(request.POST, request.FILES)
+        form = forms.ArticleForm(request.POST, request.FILES)
         if form.is_valid():
-            bb = form.save()
-            formset = forms.AIFormSet(request.POST, request.FILES, instance=bb)
+            article = form.save()
+            formset = forms.AIFormSet(request.POST, request.FILES, instance=article)
             if formset.is_valid():
                 formset.save()
-                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                messages.add_message(request, messages.SUCCESS, 'Статья добавлена')
                 return redirect('main:profile')
     else:
-        form = forms.BbForm(initial={'author': request.user.pk})
+        form = forms.ArticleForm(initial={'author': request.user.pk})
         formset = forms.AIFormSet()
     context = {'form': form, 'formset': formset}
-    return render(request, 'main/profile_bb_add.html', context)
+    return render(request, 'main/profile_article_add.html', context)
 
 
 @login_required
-def profile_bb_detail(request, pk):
-    bb = get_object_or_404(models.Bb, pk=pk)
-    ais = bb.additionalimage_set.all()
-    comments = models.Comment.objects.filter(bb=pk, is_active=True)
-    context = {'bb': bb, 'ais': ais, 'comments': comments}
-    return render(request, 'main/profile_bb_detail.html', context)
+def profile_article_detail(request, pk):
+    article = get_object_or_404(models.Article, pk=pk)
+    ais = article.additionalimage_set.all()
+    comments = models.Comment.objects.filter(article=pk, is_active=True)
+    context = {'article': article, 'ais': ais, 'comments': comments}
+    return render(request, 'main/profile_article_detail.html', context)
 
 
 @login_required
-def profile_bb_change(request, pk):
-    bb = get_object_or_404(models.Bb, pk=pk)
+def profile_article_change(request, pk):
+    article = get_object_or_404(models.Article, pk=pk)
     if request.method == 'POST':
-        form = forms.BbForm(request.POST, request.FILES, instance=bb)
+        form = forms.ArticleForm(request.POST, request.FILES, instance=article)
         if form.is_valid():
-            bb = form.save()
-            formset = forms.AIFormSet(request.POST, request.FILES, instance=bb)
-            print(123)
+            article = form.save()
+            formset = forms.AIFormSet(request.POST, request.FILES, instance=article)
             if formset.is_valid():
                 formset.save()
-                messages.add_message(request, messages.SUCCESS, 'Объявление исправлено')
-                print(213)
+                messages.add_message(request, messages.SUCCESS, 'Статья исправлена')
                 return redirect('main:profile')
     else:
-        form = forms.BbForm(instance=bb)
-        formset = forms.AIFormSet(instance=bb)
+        form = forms.ArticleForm(instance=article)
+        formset = forms.AIFormSet(instance=article)
     context = {'form': form, 'formset': formset}
-    return render(request, 'main/profile_bb_change.html', context)
+    return render(request, 'main/profile_article_change.html', context)
 
 
 @login_required
-def profile_bb_delete(request, pk):
-    bb = get_object_or_404(models.Bb, pk=pk)
+def profile_article_delete(request, pk):
+    article = get_object_or_404(models.Article, pk=pk)
     if request.method == 'POST':
-        bb.delete()
-        messages.add_message(request, messages.SUCCESS, 'Объявление удалено')
+        article.delete()
+        messages.add_message(request, messages.SUCCESS, 'Статья удалена')
         return redirect('main:profile')
     else:
-        context = {'bb': bb}
-        return render(request, 'main/profile_bb_delete.html', context)
+        context = {'article': article}
+        return render(request, 'main/profile_article_delete.html', context)
 
 
 class RegisterDoneView(TemplateView):
@@ -244,7 +242,7 @@ class RegisterDoneView(TemplateView):
 
 
 class RegisterUserView(CreateView):
-    model = models.AdvUser
+    model = models.TravelUser
     template_name = 'main/register_user.html'
     form_class = forms.RegisterUserForm
     success_url = reverse_lazy('main:register_done')
@@ -255,7 +253,7 @@ def user_activate(request, sign):
         username = signer.unsign(sign)
     except BadSignature:
         return render(request, 'main/bad_signature.html')
-    user = get_object_or_404(models.AdvUser, username=username)
+    user = get_object_or_404(models.TravelUser, username=username)
     if user.is_activated:
         template = 'main/user_is_activated.html'
     else:

@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from main import utilities
 
 
-class AdvUser(AbstractUser):
+class TravelUser(AbstractUser):
     is_activated = models.BooleanField(
         default=True, db_index=True, verbose_name='Прошел активацию?'
     )
@@ -13,13 +13,13 @@ class AdvUser(AbstractUser):
     )
 
     def delete(self, *args, **kwargs):
-        for bb in self.bb_set.all():
-            bb.delete()
+        for article in self.article_set.all():
+            article.delete()
         super().delete(*args, **kwargs)
 
 
 class AdditionalImage(models.Model):
-    bb = models.ForeignKey('Bb', on_delete=models.CASCADE, verbose_name='Объявление')
+    article = models.ForeignKey('Article', on_delete=models.CASCADE, verbose_name='Статья')
     image = models.ImageField(
         upload_to=utilities.get_timestamp_path, verbose_name='Изображение'
     )
@@ -29,19 +29,17 @@ class AdditionalImage(models.Model):
         verbose_name = 'Дополнительное изображение'
 
 
-class Bb(models.Model):
-    rubric = models.ForeignKey(
-        'SubRubric', on_delete=models.PROTECT, verbose_name='Рубрика'
+class Article(models.Model):
+    city = models.ForeignKey(
+        'City', on_delete=models.PROTECT, verbose_name='Город'
     )
-    title = models.CharField(max_length=40, verbose_name='Товар')
-    content = models.TextField(verbose_name='Описание')
-    price = models.FloatField(default=0, verbose_name='Цена')
-    contacts = models.TextField(verbose_name='Контакты')
+    title = models.CharField(max_length=40, verbose_name='Заголовок')
+    content = models.TextField(verbose_name='Содержание')
     image = models.ImageField(
         blank=True, upload_to=utilities.get_timestamp_path, verbose_name='Изображение'
     )
     author = models.ForeignKey(
-        AdvUser, on_delete=models.CASCADE, verbose_name='Автор объявления'
+        TravelUser, on_delete=models.CASCADE, verbose_name='Автор статьи'
     )
     is_active = models.BooleanField(
         default=True, db_index=True, verbose_name='Выводить в списке?'
@@ -59,32 +57,32 @@ class Bb(models.Model):
         super().delete(*args, **kwargs)
 
     class Meta:
-        verbose_name_plural = 'Объявления'
-        verbose_name = 'Объявление'
+        verbose_name_plural = 'Статьи'
+        verbose_name = 'Статья'
         ordering = ['-created_at']
 
 
-class Rubric(models.Model):
+class Place(models.Model):
     name = models.CharField(
         max_length=20, db_index=True, unique=True, verbose_name='Название'
     )
     order = models.SmallIntegerField(default=0, db_index=True, verbose_name='Порядок')
-    super_rubric = models.ForeignKey(
-        'SuperRubric',
+    country = models.ForeignKey(
+        'Country',
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name='Надрубрика',
+        verbose_name='Страна',
     )
 
 
-class SuperRubricManager(models.Manager):
+class CountryManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(super_rubric__isnull=True)
+        return super().get_queryset().filter(country__isnull=True)
 
 
-class SuperRubric(Rubric):
-    objects = SuperRubricManager()
+class Country(Place):
+    objects = CountryManager()
 
     def __str__(self):
         return self.name
@@ -92,30 +90,30 @@ class SuperRubric(Rubric):
     class Meta:
         proxy = True
         ordering = ('order', 'name')
-        verbose_name = 'Надрубрика'
-        verbose_name_plural = 'Надрубрики'
+        verbose_name = 'Страна'
+        verbose_name_plural = 'Страны'
 
 
-class SubRubricManager(models.Manager):
+class CityManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(super_rubric__isnull=False)
+        return super().get_queryset().filter(country__isnull=False)
 
 
-class SubRubric(Rubric):
-    objects = SubRubricManager()
+class City(Place):
+    objects = CityManager()
 
     def __str__(self):
-        return f'{self.super_rubric.name} - {self.name}'
+        return f'{self.country.name} - {self.name}'
 
     class Meta:
         proxy = True
-        ordering = ('super_rubric__order', 'super_rubric__name', 'order', 'name')
-        verbose_name = 'Подрубрика'
-        verbose_name_plural = 'Подрубрики'
+        ordering = ('country__order', 'country__name', 'order', 'name')
+        verbose_name = 'Город'
+        verbose_name_plural = 'Города'
 
 
 class Comment(models.Model):
-    bb = models.ForeignKey(Bb, on_delete=models.CASCADE, verbose_name='Объявление')
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, verbose_name='Статья')
     author = models.CharField(max_length=30, verbose_name='Автор')
     content = models.TextField(verbose_name='Содержание')
     is_active = models.BooleanField(
@@ -132,7 +130,7 @@ class Comment(models.Model):
 
 
 def post_save_dispatcher(sender, **kwargs):
-    author = kwargs['instance'].bb.author
+    author = kwargs['instance'].article.author
     if kwargs['created'] and author.send_messages:
         utilities.send_new_comment_notification(kwargs['instance'])
 

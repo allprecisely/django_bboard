@@ -1,0 +1,42 @@
+{% extends "layout/basic.html" %}
+
+{% load thumbnail %}
+{% load static %}
+{% load bootstrap4 %}
+
+{% block title %}{{ city }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-2">{{ city }}</h2>
+<div class="container-fluid mb-2">
+    <div class="row">
+        <div class="col">&nbsp;</div>
+        <form class="col-md-auto form-inline">
+            {% bootstrap_form form show_label=False %}
+            {% bootstrap_button content='Искать' button_type='submit' %}
+        </form>
+    </div>
+</div>
+{% if articles %}
+<ul class="list-unstyled">
+    {%for article in articles %}
+    <li class="media my-5 p-3 border">
+        <div class="media-body">
+            {% url 'main:detail' city_pk=article.city.pk pk=article.pk as url %}
+            <h3 class="text-center"><a href="{{ url }}{{ all }}">{{ article.title }}</a></h3>
+            <a href="{{ url }}{{ all }}">
+                {% if article.image %}
+                <img class="mr-3" src="{% thumbnail article.image 'default' %}" align="left" hspace="10px" vspace="10px">
+                {% else %}
+                <img class="mr-3" src="{% static 'main/empty.jpg' %}" align="left" hspace="10px" vspace="10px" width="210px">
+                {% endif %}
+            </a>
+            <p>{{ article.content|linebreaks|slice:":500" }}{% if article.content|length > 500 %}...{% endif %}</p>
+            <p class="text-right font-italic">{{ article.created_at }}</p>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% bootstrap_pagination page url=keyword %}
+{% endif %}
+{% endblock %}

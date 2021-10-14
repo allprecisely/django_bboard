@@ -11,15 +11,15 @@ from api import serializers
 
 
 @api_view(['GET'])
-def bbs(request):
-    bbs = models.Bb.objects.filter(is_active=True)[:10]
-    serializer = serializers.BbSerializer(bbs, many=True)
+def articles(request):
+    articles = models.Article.objects.filter(is_active=True)[:10]
+    serializer = serializers.ArticleSerializer(articles, many=True)
     return Response(serializer.data)
 
 
-class BbDetailView(RetrieveAPIView):
-    queryset = models.Bb.objects.filter(is_active=True)
-    serializer_class = serializers.BbDetailSerializer
+class ArticleDetailView(RetrieveAPIView):
+    queryset = models.Article.objects.filter(is_active=True)
+    serializer_class = serializers.ArticleDetailSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -33,6 +33,6 @@ def comments(request, pk):
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
     else:
-        comments = models.Comment.objects.filter(is_active=True, bb=pk)
+        comments = models.Comment.objects.filter(is_active=True, article=pk)
         serializer = serializers.CommentSerializer(comments, many=True)
         return Response(serializer.data)

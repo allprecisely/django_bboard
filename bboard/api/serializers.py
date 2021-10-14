@@ -3,19 +3,19 @@ from rest_framework import serializers
 from main import models
 
 
-class BbSerializer(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Bb
-        fields = ('id', 'title', 'content', 'price', 'created_at')
+        model = models.Article
+        fields = ('id', 'title', 'content', 'created_at')
 
 
-class BbDetailSerializer(serializers.ModelSerializer):
+class ArticleDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Bb
-        fields = ('id', 'title', 'content', 'price', 'created_at', 'contacts', 'image')
+        model = models.Article
+        fields = ('id', 'title', 'content', 'created_at', 'image')
 
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
-        fields = ('bb', 'author', 'content', 'created_at')
+        fields = ('article', 'author', 'content', 'created_at')

@@ -1,0 +1,10 @@
+div {
+  margin: 10px 0px;
+  padding: 0px 10px;
+  border: grey thin solid;
+}
+
+div p.date {
+  font-style: italic;
+  text-align: right;
+}

@@ -13,11 +13,11 @@
 {% else %}
 <p>Здравствуйте!</p>
 {% endif %}
-<p><a href="{% url 'main:profile_bb_add' %}">Добавить объявление</a></p>
-{% if bbs %}
+<p><a href="{% url 'main:profile_article_add' %}">Добавить статью</a></p>
+{% if articles %}
 <div class="container-fluid mb-2">
     <div class="row">
-        <h2>Ваши объявления</h2>
+        <h2>Ваши статьи</h2>
         <div class="col">&nbsp;</div>
         <form class="col-md-auto form-inline">
             {% bootstrap_form form show_label=False %}
@@ -26,34 +26,34 @@
     </div>
 </div>
 <ul class="list-unstyled">
-    {% for bb in bbs %}
+    {% for article in articles %}
     <li class="media my-5 p-3 border">
-        {% url 'main:profile_bb_detail' pk=bb.pk as url %}
-        <a href="{{ url }}{{ all }}">
-            {% if bb.image %}
-            <img class="mr-3" src="{% thumbnail bb.image 'default' %}">
-            {% else %}
-            <img class="mr-3" src="{% static 'main/empty.jpg' %}">
-            {% endif %}
-        </a>
         <div class="media-body">
-            <h3><a href="{{ url }}{{ all }}">{{ bb.title }}</a></h3>
-            <div>{{ bb.content }}</div>
-            <p class="text-right font-weight-bold">{{ bb.price }} руб.</p>
+            {% url 'main:profile_article_detail' pk=article.pk as url %}
+            <h3 class="text-center"><a href="{{ url }}{{ all }}">{{ article.title }}</a></h3>
+            <a href="{{ url }}{{ all }}">
+                {% if article.image %}
+                <img class="mr-3" src="{% thumbnail article.image 'default' %}" align="left" hspace="10px" vspace="10px">
+                {% else %}
+                <img class="mr-3" src="{% static 'main/empty.jpg' %}" align="left" hspace="10px" vspace="10px" width="210px">
+                {% endif %}
+            </a>
+            <p>{{ article.content|linebreaks|slice:":500" }}{% if article.content|length > 500 %}...{% endif %}</p>
             <div class="container-fluid mb-2">
                 <div class="row">
                     <div class="col">&nbsp;</div>
-                    <a href="{% url 'main:profile_bb_change' pk=bb.pk %}">Изменить</a>
-                    <a href="{% url 'main:profile_bb_delete' pk=bb.pk %}">Удалить</a>
-                    <p class="text-right font-italic">{{ bb.created_at }}</p>
+                    <a href="{% url 'main:profile_article_change' pk=article.pk %}">Изменить&nbsp;</a>
+                    <a href="{% url 'main:profile_article_delete' pk=article.pk %}">Удалить&nbsp;</a>
+                    <p class="text-right font-italic">{{ article.created_at }}</p>
                 </div>
             </div>
+
         </div>
     </li>
     {% endfor %}
 </ul>
 {% bootstrap_pagination page url=keyword %}
 {% else %}
-<h2>Объявлений пока нет. <a href="{% url 'main:profile_bb_add' %}">Создайте первое :)</a></h2>
+<h2>Статей пока нет. <a href="{% url 'main:profile_article_add' %}">Создайте первое :)</a></h2>
 {% endif %}
 {% endblock %}

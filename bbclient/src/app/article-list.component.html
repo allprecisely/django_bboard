@@ -1,0 +1,6 @@
+<h2>Последние 10 статей</h2>
+<div *ngFor="let article of articles">
+  <h3><a [routerLink]="article.id">{{ article.title }}</a></h3>
+  <p>{{ article.content }}</p>
+  <p class="date">{{ article.created_at|date:'medium' }}</p>
+</div>

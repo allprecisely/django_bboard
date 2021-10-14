@@ -4,7 +4,7 @@ from api import views
 
 app_name = 'api'
 urlpatterns = [
-    path('bbs/<int:pk>/comments/', views.comments, name='comments'),
-    path('bbs/<int:pk>/', views.BbDetailView.as_view(), name='detail'),
-    path('bbs/', views.bbs, name='bbs'),
+    path('articles/<int:pk>/comments/', views.comments, name='comments'),
+    path('articles/<int:pk>/', views.ArticleDetailView.as_view(), name='detail'),
+    path('articles/', views.articles, name='articles'),
 ]

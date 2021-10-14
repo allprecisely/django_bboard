@@ -7,9 +7,9 @@ user_register = Signal(providing_args=['instance'])
 
 
 class MainConfig(AppConfig):
-    # default_auto_field = 'django.db.models.BigAutoField'
+    default_auto_field = 'django.db.models.BigAutoField'
     name = 'main'
-    verbose_name = 'Доска объявлений'
+    verbose_name = 'Miles of Life'
 
 
 def user_registered_dispatcher(sender, **kwargs):

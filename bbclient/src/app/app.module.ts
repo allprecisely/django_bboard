@@ -9,22 +9,22 @@ import { Routes } from "@angular/router";
 import { RouterModule } from "@angular/router";
 
 import { AppComponent } from './app.component';
-import { BbListComponent } from './bb-list.component';
-import { BbDetailComponent } from './bb-detail.component';
-import { BbService } from './bb.service';
+import { ArticleListComponent } from './article-list.component';
+import { ArticleDetailComponent } from './article-detail.component';
+import { ArticleService } from './article.service';
 
 registerLocaleData(localeRu, 'ru', localeRuExtra)
 
 const appRoutes: Routes = [
-  {path: ':pk', component: BbDetailComponent},
-  {path: '', component: BbListComponent},
+  {path: ':pk', component: ArticleDetailComponent},
+  {path: '', component: ArticleListComponent},
 ]
 
 @NgModule({
   declarations: [
     AppComponent,
-    BbListComponent,
-    BbDetailComponent
+    ArticleListComponent,
+    ArticleDetailComponent
   ],
   imports: [
     RouterModule.forRoot(appRoutes),
@@ -33,7 +33,7 @@ const appRoutes: Routes = [
     FormsModule
   ],
   providers: [
-    BbService,
+    ArticleService,
     {provide: LOCALE_ID, useValue: 'ru'}
   ],
   bootstrap: [AppComponent]

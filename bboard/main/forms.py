@@ -13,7 +13,7 @@ class AuthenticationCustomForm(auth_forms.AuthenticationForm):
     def clean(self):
         username = self.cleaned_data.get('username')
 
-        if not (qs_user := models.AdvUser.objects.filter(username=username)):
+        if not (qs_user := models.TravelUser.objects.filter(username=username)):
             raise ValidationError(_("A user with that username does not exist."))
 
         if not qs_user.first().is_active:
@@ -22,15 +22,15 @@ class AuthenticationCustomForm(auth_forms.AuthenticationForm):
         return super().clean()
 
 
-class BbForm(forms.ModelForm):
+class ArticleForm(forms.ModelForm):
     class Meta:
-        model = models.Bb
+        model = models.Article
         fields = '__all__'
         widgets = {'author': forms.HiddenInput}
 
 
 AIFormSet = forms.inlineformset_factory(
-    models.Bb, models.AdditionalImage, fields='__all__'
+    models.Article, models.AdditionalImage, extra=2, fields='__all__'
 )
 
 
@@ -38,7 +38,7 @@ class ChangeUserInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес электронной почты')
 
     class Meta:
-        model = models.AdvUser
+        model = models.TravelUser
         fields = ('username', 'email', 'first_name', 'last_name', 'send_messages')
 
 
@@ -83,7 +83,7 @@ class RegisterUserForm(forms.ModelForm):
         return user
 
     class Meta:
-        model = models.AdvUser
+        model = models.TravelUser
         fields = (
             'username',
             'email',
@@ -95,16 +95,16 @@ class RegisterUserForm(forms.ModelForm):
         )
 
 
-class SubRubricForm(forms.ModelForm):
-    super_rubric = forms.ModelChoiceField(
-        queryset=models.SuperRubric.objects.all(),
+class CityForm(forms.ModelForm):
+    country = forms.ModelChoiceField(
+        queryset=models.Country.objects.all(),
         empty_label=None,
-        label='Надрубрика',
+        label='Страна',
         required=True,
     )
 
     class Meta:
-        model = models.SubRubric
+        model = models.City
         fields = '__all__'
 
 
@@ -116,7 +116,7 @@ class UserCommentForm(forms.ModelForm):
     class Meta:
         model = models.Comment
         exclude = ('is_active',)
-        widgets = {'bb': forms.HiddenInput}
+        widgets = {'article': forms.HiddenInput}
 
 
 class GuestCommentForm(forms.ModelForm):
@@ -128,4 +128,4 @@ class GuestCommentForm(forms.ModelForm):
     class Meta:
         model = models.Comment
         exclude = ('is_active',)
-        widgets = {'bb': forms.HiddenInput}
+        widgets = {'article': forms.HiddenInput}

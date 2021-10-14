@@ -45,7 +45,7 @@ class NonactivatedFilter(admin.SimpleListFilter):
             )
 
 
-class AdvUserAdmin(admin.ModelAdmin):
+class TravelUserAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'is_activated', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     list_filter = (NonactivatedFilter,)
@@ -62,31 +62,29 @@ class AdvUserAdmin(admin.ModelAdmin):
     actions = (send_activation_notifications,)
 
 
-class SubRubricAdmin(admin.ModelAdmin):
-    form = forms.SubRubricForm
+class CityAdmin(admin.ModelAdmin):
+    form = forms.CityForm
 
 
-class SubRubricInline(admin.TabularInline):
-    model = models.SubRubric
+class CityInline(admin.TabularInline):
+    model = models.City
 
 
-class SuperRubricAdmin(admin.ModelAdmin):
-    exclude = ('super_rubric',)
-    inlines = (SubRubricInline,)
+class CountryAdmin(admin.ModelAdmin):
+    exclude = ('country',)
+    inlines = (CityInline,)
 
 
 class AdditionalImageInline(admin.TabularInline):
     model = models.AdditionalImage
 
 
-class BbAdmin(admin.ModelAdmin):
-    list_display = ('rubric', 'title', 'content', 'author', 'created_at')
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('city', 'title', 'content', 'author', 'created_at')
     fields = (
-        ('rubric', 'author'),
+        ('city', 'author'),
         'title',
         'content',
-        'price',
-        'contacts',
         'image',
         'is_active',
     )
@@ -94,12 +92,12 @@ class BbAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'author', 'bb', 'content', 'created_at')
+    list_display = ('__str__', 'author', 'article', 'content', 'created_at')
     search_fields = ('author',)
     readonly_fields = ('created_at',)
 
 
-admin.site.register(models.AdvUser, AdvUserAdmin)
-admin.site.register(models.SuperRubric, SuperRubricAdmin)
-admin.site.register(models.Bb, BbAdmin)
+admin.site.register(models.TravelUser, TravelUserAdmin)
+admin.site.register(models.Country, CountryAdmin)
+admin.site.register(models.Article, ArticleAdmin)
 admin.site.register(models.Comment, CommentAdmin)

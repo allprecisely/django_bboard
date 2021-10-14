@@ -1,8 +1,8 @@
 from main import models
 
 
-def bboard_context_processor(request):
-    context = {'rubrics': models.SubRubric.objects.all(), 'keyword': '', 'all': ''}
+def travelblog_context_processor(request):
+    context = {'cities': models.City.objects.all(), 'keyword': '', 'all': ''}
     if keyword := request.GET.get('keyword'):
         context['keyword'] = f'?keyword={keyword}'
         context['all'] = context['keyword']

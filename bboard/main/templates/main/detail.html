@@ -2,23 +2,24 @@
 
 {% load bootstrap4 %}
 
-{% block title %}{{ bb.title }} - {{ bb.rubric.name }}{% endblock %}
+{% block title %}{{ article.title }} - {{ article.city.name }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
     <div class="row">
-        {% if bb.image %}
-        <div class="col-md-auto">
-            <img src="{{ bb.image.url }}" class="main-image" width="300px">
-        </div>
-        {% endif %}
         <div class="col">
-            <h2>{{ bb.title }}</h2>
-            <p>{{ bb.content }}</p>
-            <p class="font-weight-bold">{{ bb.price }} руб.</p>
-            <p>{{ bb.contacts }}</p>
-            <p class="text-right font-italic">Добавлено {{ bb.created_at }}</p>
+            <h2 class="text-center">{{ article.title }}</h2>
+            {% if article.image %}
+            <div class="col-md-auto">
+                <img src="{{ article.image.url }}" align="right" hspace="10px" vspace="10px" width="500px">
+            </div>
+            {% endif %}
+            <p>
+                {{ article.content | linebreaks }}
+            </p>
+            <p class="text-right font-italic">Добавлено {{ article.created_at }}</p>
         </div>
+
     </div>
 </div>
 {% if ais %}
@@ -41,13 +42,13 @@
     {% for comment in comments %}
     <div class="my-2 p-2 border">
         <h5>{{ comment.author }}</h5>
-        <p>{{ comment.content }}</p>
+        <p>{{ comment.content | linebreaks }}</p>
         <p class="text-right font-italic">{{ comment.created_at }}</p>
     </div>
     {% endfor %}
 </div>
 {% endif %}
 <p>
-    <a href="{% url 'main:by_rubric' pk=bb.rubric.pk %}{{ all }}">Назад</a>
+    <a href="{% url 'main:by_city' pk=article.city.pk %}{{ all }}">Назад</a>
 </p>
 {% endblock %}

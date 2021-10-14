@@ -4,7 +4,7 @@ import os
 from django.template.loader import render_to_string
 from django.core.signing import Signer
 
-from bboard.settings import ALLOWED_HOSTS
+from travelblog.settings import ALLOWED_HOSTS
 
 signer = Signer()
 
@@ -31,7 +31,7 @@ def send_new_comment_notification(comment):
     else:
         host = 'http://localhost:8000'
 
-    author = comment.bb.author
+    author = comment.article.author
     context = {
         'author': author,
         'host': host,
