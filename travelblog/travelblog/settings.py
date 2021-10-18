@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-ld=#k5li1ebt1r$!kx@kh2)$q2pf-%s143u$6#hdwqf@!3j@vx
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.14', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
@@ -44,8 +45,6 @@ INSTALLED_APPS = [
     'captcha',
     'corsheaders',
     'django_cleanup',
-    'django_celery_beat',
-    'django_celery_results',
     'easy_thumbnails',
     'rest_framework',
     'main',
@@ -94,7 +93,7 @@ DATABASES = {
         'NAME': 'travelblog_db',
         'USER': 'traveluser',
         'PASSWORD': 'devtravelpass',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgresdb',
         'PORT': '5432',
     }
 }
