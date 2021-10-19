@@ -126,7 +126,7 @@ EMAIL_USE_TLS = True
 CELERY_TIMEZONE = "Europe/Moscow"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # для запуска не в rabbitmq
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # для запуска не в rabbitmq
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

@@ -77,7 +77,7 @@ def by_city(request, pk):
         keyword = ''
 
     form = forms.SearchForm(initial={'keyword': keyword})
-    paginator = Paginator(articles, 2)
+    paginator = Paginator(articles, 5)
     if 'page' in request.GET:
         page_num = request.GET['page']
     else:
