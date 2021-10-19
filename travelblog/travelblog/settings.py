@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = ['127.0.0.1']
 
-HOST = '77.223.99.224'
+HOST = 'miles-of-life.ru'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
