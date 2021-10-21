@@ -1,3 +1,4 @@
+from rest_framework.generics import ListAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -10,11 +11,9 @@ from main import models
 from api import serializers
 
 
-@api_view(['GET'])
-def articles(request):
-    articles = models.Article.objects.filter(is_active=True)[:10]
-    serializer = serializers.ArticleSerializer(articles, many=True)
-    return Response(serializer.data)
+class BillingRecordsView(ListAPIView):
+    queryset = models.Article.objects.filter(is_active=True)
+    serializer_class = serializers.ArticleSerializer
 
 
 class ArticleDetailView(RetrieveAPIView):
