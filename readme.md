@@ -1,2 +1,2 @@
 Проект живет туть: 
-https://miles-of-life.ru/
+https://miles-of-life.ru/  (сервер пока выключил)
